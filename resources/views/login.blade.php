@@ -8,7 +8,7 @@
 
 <style>
     .login-container {
-        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 50%, #004085 100%);
+        background: linear-gradient(135deg, #0b0b0c 0%, #47515f 50%, #004085 100%);
     }
     .login-card {
         border-radius: 1.25rem;
@@ -21,7 +21,7 @@
         box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
     }
     .btn-login {
-        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        background: linear-gradient(135deg, #585a5e 0%, #0b5ed7 100%);
         transition: all 0.2s ease-in-out;
     }
     .btn-login:hover {

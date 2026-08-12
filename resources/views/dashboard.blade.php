@@ -6,262 +6,1195 @@
 
 @include('layouts.navbar')
 
-<div class="container py-4">
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-gradient bg-primary text-white p-4">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-            <div>
-              
-                <h3 class="fw-bold mb-1">
-                    Selamat Datang, {{ Auth::user()->name ?? 'Pengguna' }}! 👋
-                </h3>
-                <p class="mb-0 text-white-50 small">
-                    Berikut adalah ringkasan performa toko dan status inventaris Anda hari ini.
+
+<style>
+
+    body {
+        background: #f5f7fb;
+    }
+
+    /* =========================
+       GLOBAL
+    ========================= */
+
+    .dashboard-container {
+        max-width: 1400px;
+        margin: auto;
+    }
+
+    .text-muted-custom {
+        color: #7b8494;
+    }
+
+
+    /* =========================
+       WELCOME HEADER
+    ========================= */
+
+    .welcome-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        padding: 30px;
+        background: linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6,
+            #60a5fa
+        );
+        box-shadow: 0 15px 35px rgba(37, 99, 235, 0.20);
+    }
+
+    .welcome-card::before {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.08);
+        right: -70px;
+        top: -90px;
+    }
+
+    .welcome-card::after {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.06);
+        right: 120px;
+        bottom: -90px;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .welcome-title {
+        font-size: 30px;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 6px;
+    }
+
+    .welcome-subtitle {
+        color: rgba(255,255,255,.80);
+        margin-bottom: 0;
+    }
+
+
+    /* =========================
+       PROFILE BOX
+    ========================= */
+
+    .profile-box {
+        position: relative;
+        z-index: 2;
+        background: rgba(255,255,255,.13);
+        border: 1px solid rgba(255,255,255,.16);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 12px 16px;
+        min-width: 280px;
+    }
+
+    .profile-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: white;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .profile-name {
+        color: white;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .profile-role {
+        color: rgba(255,255,255,.65);
+        font-size: 12px;
+    }
+
+
+    /* =========================
+       PAGE TITLE
+    ========================= */
+
+    .page-title {
+        font-size: 30px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    .date-text {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+
+    /* =========================
+       STAT CARDS
+    ========================= */
+
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+        border: 0;
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 6px 20px rgba(15,23,42,.06);
+        transition: all .25s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 30px rgba(15,23,42,.10);
+    }
+
+    .stat-card::after {
+        content: "";
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        right: -35px;
+        bottom: -40px;
+        background: rgba(37,99,235,.05);
+    }
+
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .stat-number {
+        font-size: 25px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: #7b8494;
+        font-weight: 600;
+    }
+
+
+    /* =========================
+       SECTION TITLE
+    ========================= */
+
+    .section-title {
+        font-size: 19px;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+
+    .section-subtitle {
+        color: #8a93a3;
+        font-size: 13px;
+    }
+
+    .section-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    /* =========================
+       CONTENT CARD
+    ========================= */
+
+    .content-card {
+        background: white;
+        border: 0;
+        border-radius: 18px;
+        box-shadow: 0 6px 20px rgba(15,23,42,.06);
+        overflow: hidden;
+    }
+
+    .content-header {
+        padding: 20px 22px 12px;
+    }
+
+
+    /* =========================
+       TABLE
+    ========================= */
+
+    .dashboard-table {
+        margin-bottom: 0;
+    }
+
+    .dashboard-table thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        padding: 14px 20px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .dashboard-table tbody td {
+        padding: 14px 20px;
+        border-color: #eef1f5;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    .dashboard-table tbody tr {
+        transition: background .2s ease;
+    }
+
+    .dashboard-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+
+    /* =========================
+       STOCK BADGE
+    ========================= */
+
+    .stock-badge {
+        min-width: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 9px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .stock-low {
+        background: #fff4cc;
+        color: #d97706;
+    }
+
+    .stock-empty {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+
+    /* =========================
+       PRODUCT NAME
+    ========================= */
+
+    .product-name {
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .product-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    /* =========================
+       BEST SELLER RANK
+    ========================= */
+
+    .rank-number {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 12px;
+    }
+
+    .sales-number {
+        color: #2563eb;
+        font-weight: 800;
+    }
+
+
+    /* =========================
+       EMPTY STATE
+    ========================= */
+
+    .empty-state {
+        padding: 45px 20px;
+        text-align: center;
+        color: #94a3b8;
+    }
+
+    .empty-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: #ecfdf5;
+        color: #10b981;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 14px;
+        font-size: 25px;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 768px) {
+
+        .welcome-card {
+            padding: 22px;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+        }
+
+        .profile-box {
+            min-width: 100%;
+        }
+
+        .page-title {
+            font-size: 25px;
+        }
+
+        .dashboard-table thead th,
+        .dashboard-table tbody td {
+            white-space: nowrap;
+        }
+
+    }
+
+</style>
+
+
+<div class="container-fluid px-3 px-md-4 py-4 dashboard-container">
+
+
+    {{-- =====================================================
+         WELCOME HEADER
+    ====================================================== --}}
+
+    <div class="welcome-card mb-4">
+
+        <div class="d-flex flex-column flex-lg-row
+                    justify-content-between
+                    align-items-lg-center
+                    gap-4">
+
+            <div class="welcome-content">
+
+                <div class="d-flex align-items-center gap-2 mb-2">
+
+                    <span class="badge bg-white text-primary px-3 py-2 rounded-pill">
+                        <i class="bi bi-shop me-1"></i>
+                      
+                    </span>
+
+                </div>
+
+                <h1 class="welcome-title">
+
+                    Selamat Datang,
+                    {{ auth()->user()->name ?? 'Admin' }}! 👋
+
+                </h1>
+
+                <p class="welcome-subtitle">
+
+                    Pantau performa toko dan kondisi inventaris
+                    Anda hari ini.
+
                 </p>
+
             </div>
-            
-            <div class="d-flex align-items-center gap-3 bg-white bg-opacity-10 p-2 px-3 rounded-3">
-                <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+
+
+            {{-- PROFILE --}}
+            <div class="profile-box">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="profile-avatar">
+
+                        {{ strtoupper(
+                            substr(
+                                auth()->user()->name ?? 'A',
+                                0,
+                                1
+                            )
+                        ) }}
+
+                    </div>
+
+                    <div>
+
+                        <div class="profile-name">
+
+                            {{ auth()->user()->name ?? 'Admin' }}
+
+                        </div>
+
+                        <div class="profile-role">
+
+                            <i class="bi bi-person-badge me-1"></i>
+
+                            {{ auth()->user()->role->name ?? 'Admin' }}
+
+                        </div>
+
+                    </div>
+
                 </div>
-                <div class="text-start">
-                    <div class="fw-bold small lh-1 text-white">{{ Auth::user()->name ?? 'User' }}</div>
-                    <small class="text-white-50" style="font-size: 0.75rem;">{{ Auth::user()->role ?? 'Administrator' }}</small>
-                </div>
+
             </div>
+
         </div>
+
     </div>
 
-    <div class="text-center mb-5">
-        <h2 class="fw-bold text-dark mb-1">Ringkasan Hari Ini</h2>
-        <p class="text-muted mb-0">
-            <i class="bi bi-calendar-event me-1"></i>
-            {{ $tanggalHariIni->translatedFormat('l, d F Y') }}
-        </p>
+
+    {{-- =====================================================
+         PAGE TITLE
+    ====================================================== --}}
+
+    <div class="text-center mb-4">
+
+        <h2 class="page-title mb-1">
+            Ringkasan Hari Ini
+        </h2>
+
+        <div class="date-text">
+
+            <i class="bi bi-calendar3 me-1"></i>
+
+            {{ now()->translatedFormat('l, d F Y') }}
+
+        </div>
+
     </div>
 
-    @can('viewAny', App\Models\User::class)
-        <div class="mb-5">
-            <div class="d-flex align-items-center mb-3">
-                <div class="bg-primary rounded-pill me-2" style="width: 4px; height: 20px;"></div>
-                <h5 class="fw-bold text-dark mb-0">Penjualan Hari Ini</h5>
-            </div>
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3 h-100">
-                        <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted small text-uppercase fw-semibold tracking-wider">Total Nilai Penjualan</span>
-                                <h3 class="fw-bold text-primary mb-0 mt-1">
-                                    Rp {{ number_format($ringkasan['total_penjualan'] ?? 0, 0, ',', '.') }}
-                                </h3>
+    {{-- =====================================================
+         STATISTIC CARDS
+    ====================================================== --}}
+
+    <div class="row g-3 mb-4">
+
+        {{-- TOTAL PRODUK --}}
+        <div class="col-6 col-xl-3">
+
+            <div class="stat-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <div class="stat-label mb-2">
+                                Total Produk
                             </div>
-                            <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-circle">
-                                <i class="bi bi-currency-dollar fs-3"></i>
+
+                            <div class="stat-number">
+
+                                {{ $totalProduk ?? 0 }}
+
                             </div>
+
                         </div>
+
+                        <div class="stat-icon bg-primary-subtle text-primary">
+
+                            <i class="bi bi-box-seam-fill"></i>
+
+                        </div>
+
                     </div>
+
+                    <div class="small text-muted-custom mt-3">
+
+                        <i class="bi bi-box me-1"></i>
+                        Produk tersedia di toko
+
+                    </div>
+
                 </div>
 
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3 h-100">
-                        <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted small text-uppercase fw-semibold tracking-wider">Jumlah Transaksi</span>
-                                <h3 class="fw-bold text-dark mb-0 mt-1">
-                                    {{ $ringkasan['total_transaksi'] ?? 0 }} <span class="fs-6 font-normal text-muted">Transaksi</span>
-                                </h3>
-                            </div>
-                            <div class="p-3 bg-info bg-opacity-10 text-info rounded-circle">
-                                <i class="bi bi-receipt fs-3"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
+
         </div>
 
-        <div class="mb-5">
-            <div class="d-flex align-items-center mb-3">
-                <div class="bg-success rounded-pill me-2" style="width: 4px; height: 20px;"></div>
-                <h5 class="fw-bold text-dark mb-0">Status Pembayaran</h5>
-            </div>
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3">
-                        <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted small text-uppercase fw-semibold">Pembayaran Tunai</span>
-                                <h4 class="fw-bold text-success mb-0 mt-1">
-                                    Rp {{ number_format($ringkasan['total_cash'] ?? 0, 0, ',', '.') }}
-                                </h4>
+        {{-- STOK RENDAH --}}
+        <div class="col-6 col-xl-3">
+
+            <div class="stat-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <div class="stat-label mb-2">
+                                Stok Rendah
                             </div>
-                            <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle">
-                                <i class="bi bi-wallet2 fs-4"></i>
+
+                            <div class="stat-number text-warning">
+
+                                {{ isset($lowStock) ? $lowStock->count() : 0 }}
+
                             </div>
+
                         </div>
+
+                        <div class="stat-icon bg-warning-subtle text-warning">
+
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+
+                        </div>
+
                     </div>
+
+                    <div class="small text-muted-custom mt-3">
+
+                        <i class="bi bi-arrow-down-circle me-1"></i>
+                        Perlu segera diperhatikan
+
+                    </div>
+
                 </div>
 
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-3">
-                        <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="text-muted small text-uppercase fw-semibold">Pembayaran Non-Tunai</span>
-                                <h4 class="fw-bold text-indigo mb-0 mt-1" style="color: #6610f2;">
-                                    Rp {{ number_format($ringkasan['total_non_tunai'] ?? 0, 0, ',', '.') }}
-                                </h4>
-                            </div>
-                            <div class="p-3 bg-purple bg-opacity-10 text-purple rounded-circle" style="background-color: #e0cffc; color: #6610f2;">
-                                <i class="bi bi-credit-card fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
-    @endcan
 
-    <div class="mb-5">
-        <div class="d-flex align-items-center mb-3">
-            <div class="bg-warning rounded-pill me-2" style="width: 4px; height: 20px;"></div>
-            <h5 class="fw-bold text-dark mb-0">Critical Inventory Status</h5>
         </div>
 
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm rounded-3 h-100">
-                    <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
-                        <h6 class="fw-bold text-warning mb-0">
-                            <i class="bi bi-exclamation-triangle me-1"></i> Produk Stok Rendah
-                        </h6>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 10%;">#</th>
-                                        <th>Nama Produk</th>
-                                        <th class="text-end">Sisa Stok</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($produkStokRendah as $index => $produk)
-                                        <tr>
-                                            <td>{{ $produkStokRendah->firstItem() + $index }}</td>
-                                            <td class="fw-semibold text-dark">{{ $produk->nama }}</td>
-                                            <td class="text-end">
-                                                <span class="badge bg-warning text-dark">{{ $produk->stok }}</span>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="3" class="text-muted text-center py-4">
-                                                <i class="bi bi-check-circle text-success fs-4 d-block mb-1"></i>
-                                                Seluruh produk berada dalam kondisi stok aman.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+
+        {{-- PRODUK HABIS --}}
+        <div class="col-6 col-xl-3">
+
+            <div class="stat-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <div class="stat-label mb-2">
+                                Produk Habis
+                            </div>
+
+                            <div class="stat-number text-danger">
+
+                                {{ isset($outOfStock) ? $outOfStock->count() : 0 }}
+
+                            </div>
+
                         </div>
-                        <div class="mt-3">
-                            {{ $produkStokRendah->links() }}
+
+                        <div class="stat-icon bg-danger-subtle text-danger">
+
+                            <i class="bi bi-x-circle-fill"></i>
+
                         </div>
+
                     </div>
+
+                    <div class="small text-muted-custom mt-3">
+
+                        <i class="bi bi-box-seam me-1"></i>
+                        Produk perlu restock
+
+                    </div>
+
                 </div>
+
             </div>
 
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm rounded-3 h-100">
-                    <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
-                        <h6 class="fw-bold text-danger mb-0">
-                            <i class="bi bi-x-circle me-1"></i> Produk Habis Stok
-                        </h6>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 10%;">#</th>
-                                        <th>Nama Produk</th>
-                                        <th class="text-end">Stok</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($produkStokHabis as $index => $produk)
-                                        <tr>
-                                            <td>{{ $produkStokHabis->firstItem() + $index }}</td>
-                                            <td class="fw-semibold text-dark">{{ $produk->nama }}</td>
-                                            <td class="text-end">
-                                                <span class="badge bg-danger">{{ $produk->stok }}</span>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="3" class="text-muted text-center py-4">
-                                                <i class="bi bi-check-circle text-success fs-4 d-block mb-1"></i>
-                                                Tidak ada produk yang habis.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                </div>
-                <div class="mt-3">
-                {{ $produkStokHabis->links() }}
-            </div>
         </div>
-     </div>
+
+
+        {{-- BEST SELLER --}}
+        <div class="col-6 col-xl-3">
+
+            <div class="stat-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+
+                            <div class="stat-label mb-2">
+                                Best Seller
+                            </div>
+
+                            <div class="stat-number text-info">
+
+                                {{ isset($bestSellers) ? $bestSellers->count() : 0 }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="stat-icon bg-info-subtle text-info">
+
+                            <i class="bi bi-trophy-fill"></i>
+
+                        </div>
+
+                    </div>
+
+                    <div class="small text-muted-custom mt-3">
+
+                        <i class="bi bi-graph-up-arrow me-1"></i>
+                        Produk dengan penjualan tertinggi
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
- </div>
-</div>
 
-    <div class="mb-5">
-        <div class="d-flex align-items-center mb-3">
-            <div class="bg-info rounded-pill me-2" style="width: 4px; height: 20px;"></div>
-            <h5 class="fw-bold text-dark mb-0">Best Seller Products</h5>
+
+    {{-- =====================================================
+         CRITICAL INVENTORY
+    ====================================================== --}}
+
+    <div class="d-flex align-items-center gap-3 mb-3">
+
+        <div class="section-icon bg-warning-subtle text-warning">
+
+            <i class="bi bi-box-seam-fill"></i>
+
         </div>
 
-        <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-body p-4">
+        <div>
+
+            <div class="section-title">
+                Critical Inventory Status
+            </div>
+
+            <div class="section-subtitle">
+                Pantau produk yang membutuhkan perhatian
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row g-4 mb-5">
+
+
+        {{-- STOK RENDAH --}}
+        <div class="col-lg-6">
+
+            <div class="content-card h-100">
+
+                <div class="content-header">
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+
+                        <strong>
+                            Produk Stok Rendah
+                        </strong>
+
+                    </div>
+
+                    <small class="text-muted-custom">
+                        Produk dengan stok di bawah batas aman
+                    </small>
+
+                </div>
+
+
                 <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                <tr>
-                <th>Nama Produk</th>
-                <th class="text-center">Sisa Stok</th>
-                <th class="text-end">Unit Terjual</th>
-                </tr>
+
+                    <table class="table dashboard-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th style="width: 60px;">
+                                    #
+                                </th>
+
+                                <th>
+                                    Nama Produk
+                                </th>
+
+                                <th class="text-end">
+                                    Sisa Stok
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @forelse($lowStock ?? [] as $index => $product)
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="rank-number">
+                                            {{ $index + 1 }}
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <div class="product-icon">
+
+                                                <i class="bi bi-box"></i>
+
+                                            </div>
+
+                                            <span class="product-name">
+
+                                                {{ $product->nama }}
+
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        <span class="stock-badge stock-low">
+
+                                            {{ $product->stok }}
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            @empty
+
+                                <tr>
+
+                                    <td colspan="3">
+
+                                        <div class="empty-state">
+
+                                            <div class="empty-icon">
+
+                                                <i class="bi bi-check-lg"></i>
+
+                                            </div>
+
+                                            <strong class="d-block text-dark">
+                                                Stok aman
+                                            </strong>
+
+                                            <small>
+                                                Tidak ada produk dengan stok rendah.
+                                            </small>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- PRODUK HABIS --}}
+        <div class="col-lg-6">
+
+            <div class="content-card h-100">
+
+                <div class="content-header">
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <i class="bi bi-x-circle text-danger"></i>
+
+                        <strong>
+                            Produk Habis Stok
+                        </strong>
+
+                    </div>
+
+                    <small class="text-muted-custom">
+                        Produk yang saat ini tidak tersedia
+                    </small>
+
+                </div>
+
+
+                <div class="table-responsive">
+
+                    <table class="table dashboard-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th style="width: 60px;">
+                                    #
+                                </th>
+
+                                <th>
+                                    Nama Produk
+                                </th>
+
+                                <th class="text-end">
+                                    Stok
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @forelse($outOfStock ?? [] as $index => $product)
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="rank-number">
+
+                                            {{ $index + 1 }}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <div class="product-icon"
+                                                 style="
+                                                    background:#fef2f2;
+                                                    color:#ef4444;
+                                                 ">
+
+                                                <i class="bi bi-box-seam"></i>
+
+                                            </div>
+
+                                            <span class="product-name">
+
+                                                {{ $product->nama }}
+
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td class="text-end">
+
+                                        <span class="stock-badge stock-empty">
+
+                                            {{ $product->stok }}
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            @empty
+
+                                <tr>
+
+                                    <td colspan="3">
+
+                                        <div class="empty-state">
+
+                                            <div class="empty-icon">
+
+                                                <i class="bi bi-check-circle"></i>
+
+                                            </div>
+
+                                            <strong class="d-block text-dark">
+
+                                                Stok masih tersedia
+
+                                            </strong>
+
+                                            <small>
+
+                                                Tidak ada produk yang habis.
+
+                                            </small>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- =====================================================
+         BEST SELLER
+    ====================================================== --}}
+
+    <div class="d-flex align-items-center gap-3 mb-3">
+
+        <div class="section-icon bg-info-subtle text-info">
+
+            <i class="bi bi-trophy-fill"></i>
+
+        </div>
+
+        <div>
+
+            <div class="section-title">
+                Best Seller Products
+            </div>
+
+            <div class="section-subtitle">
+                Produk dengan jumlah penjualan tertinggi
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="content-card mb-5">
+
+        <div class="table-responsive">
+
+            <table class="table dashboard-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width: 70px;">
+                            Rank
+                        </th>
+
+                        <th>
+                            Nama Produk
+                        </th>
+
+                        <th class="text-center">
+                            Sisa Stok
+                        </th>
+
+                        <th class="text-end">
+                            Unit Terjual
+                        </th>
+
+                    </tr>
+
                 </thead>
+
+
                 <tbody>
-                 @forelse ($produkTerlaris as $produk)
-                <tr>
-                <td class="fw-semibold text-dark">{{ $produk->nama }}</td>
-                <td class="text-center">
-                <span class="badge bg-secondary bg-opacity-20 text-dark">{{ $produk->stok }}</span>
-                </td>
-                <td class="text-end fw-bold text-primary">
-                {{ $produk->total_terjual }} <small class="fw-normal text-muted">unit</small>
-                </td>
-                </tr>
-                @empty
-                <tr>
-                <td colspan="3" class="text-muted text-center py-4">
-                Belum ada data penjualan produk terlaris.
-          </td>
-        </tr>
-      @endforelse
-     </tbody>
-   </table>
-  </div>
- </div>
-</div>
-</div>
+
+                    @forelse($bestSellers ?? [] as $index => $product)
+
+                        <tr>
+
+                            <td>
+
+                                <div class="rank-number">
+
+                                    {{ $index + 1 }}
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="d-flex align-items-center gap-3">
+
+                                    <div class="product-icon">
+
+                                        <i class="bi bi-star-fill"></i>
+
+                                    </div>
+
+                                    <span class="product-name">
+
+                                        {{ $product->nama }}
+
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <td class="text-center">
+
+                                <span class="stock-badge
+                                    {{ $product->stok <= 5
+                                        ? 'stock-low'
+                                        : 'bg-light text-dark'
+                                    }}">
+
+                                    {{ $product->stok }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="text-end">
+
+                                <span class="sales-number">
+
+                                    {{ $product->unit_terjual ?? 0 }}
+
+                                </span>
+
+                                <small class="text-muted">
+                                    unit
+                                </small>
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+
+                            <td colspan="4">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-icon">
+
+                                        <i class="bi bi-bar-chart"></i>
+
+                                    </div>
+
+                                    <strong class="d-block text-dark">
+
+                                        Belum ada data penjualan
+
+                                    </strong>
+
+                                    <small>
+
+                                        Data best seller akan muncul setelah ada transaksi.
+
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    {{-- FOOTER --}}
+    <div class="text-center text-muted-custom small pb-3">
+
+        <i class="bi bi-shield-check me-1"></i>
+
+        POS Naysa &copy; {{ date('Y') }}
+
+        <span class="mx-2">•</span>
+
+        Sistem Manajemen Penjualan
+
+    </div>
+
 
 </div>
 

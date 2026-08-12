@@ -20,9 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Route tentang (Hanya bisa diakses setelah login)
-    Route::get('/tentang', function () {
-        return view('tentang');
-    })->name('tentang');
+    Route::get('/tentang', function () {return view('tentang');})->name('tentang');
 
     // Admin Only
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
